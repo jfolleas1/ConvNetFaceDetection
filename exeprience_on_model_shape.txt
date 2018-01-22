@@ -1,0 +1,25 @@
+def faceRecognition():
+    
+    model = Sequential()
+
+    model.add(Conv2D(4, 5, strides=(1,1), border_mode='same',
+                     input_shape=(36, 36, 1), data_format="channels_last", activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2)))
+
+    model.add(Conv2D(14, 3, strides=(1,1), border_mode='same', activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2)))
+
+    model.add(Flatten())
+    model.add(Dense(14, activation='relu'))
+
+    model.add(Dense(1))
+    model.add(Activation('sigmoid'))
+
+    model.compile(loss=objective, optimizer=optimizer, metrics=['accuracy'])
+    return model
+
+
+[127, 76, 64, 60, 31, 28, 13, 12, 10, 10, 10, 8, 0, 0, 0]
+[4, 8, 10, 11, 14, 25, 27, 27, 30, 35, 40, 48, 62, 73, 413]
+nb error optimum : 39 for tolereance of : [0.01]
+
