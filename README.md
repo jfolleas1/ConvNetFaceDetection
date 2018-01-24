@@ -35,3 +35,4 @@ Don't forget to add the new package to `requirements.txt` using the command in t
 * Installing the required packages contained in `requirements.txt` in the virtual environement 
 
 
+e
