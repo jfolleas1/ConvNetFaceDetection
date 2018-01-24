@@ -17,7 +17,7 @@ from keras.models import load_model
 
 TRAIN_1_DIR = '../data/train/1/'
 TRAIN_0_DIR = '../data/train/0/'
-HARD_EXAMPLE_DIR = 'data_save_difficult_nofaces/'
+HARD_EXAMPLE_DIR = 'data_save_difficult_no_faces/'
 
 
 ROWS = 36
@@ -27,7 +27,6 @@ CHANNELS = 1
 
 TRIAN_1_PATH = list(filter(lambda x: '.DS' not in x,[TRAIN_1_DIR+i for i in os.listdir(TRAIN_1_DIR)]))
 TRIAN_0_PATH = list(filter(lambda x: '.DS' not in x,[TRAIN_0_DIR+i for i in os.listdir(TRAIN_0_DIR)]))
-TRIAN_EXAMPLE_PATH = list(filter(lambda x: '.DS' not in x,[HARD_EXAMPLE_DIR+i for i in os.listdir(HARD_EXAMPLE_DIR)]))
 
 
 NB_TEST_BY_CLASS = 3000
@@ -52,7 +51,6 @@ def prep_data(images):
 
 TRIAN_1_IMAGES = prep_data(TRIAN_1_PATH)
 TRIAN_0_IMAGES = prep_data(TRIAN_0_PATH)
-HARD_EXAMPLE_SET = prep_data(TRIAN_EXAMPLE_PATH)
 
 
 def shuffle_and_get_new_train_set():
@@ -65,9 +63,12 @@ def shuffle_and_get_new_train_set():
     return train_1, train_0, test_images_1, test_images_0
 
 def prepar_train_images():
+    hard_example_paths = list(filter(lambda x: '.DS' not in x,[HARD_EXAMPLE_DIR+i for i in os.listdir(HARD_EXAMPLE_DIR)]))
+    hard_example_set = prep_data(hard_example_paths)
     train_1, train_0, test_images_1, test_images_0 = shuffle_and_get_new_train_set()
-    train_images = np.array(list(train_1[:(20000+len(HARD_EXAMPLE_SET))]) +
-                            list(train_0[:20000]) + list(HARD_EXAMPLE_SET))
+    print("inside function : " + str(len(hard_example_set)))
+    train_images = np.array(list(train_1[:(len(train_0)+len(hard_example_set))]) +
+                            list(train_0) + list(hard_example_set))
     train_images.resize((len(train_images), 36, 36, 1))
     train_and_label = list(zip(train_images, ([1]*(len(train_images)//2)) + ([0]*(len(train_images)//2))))
     random.shuffle(train_and_label)
@@ -101,15 +102,15 @@ def faceRecognition():
 
 
 def get_model(verbose_train=0):
-
-
     train_images, train_labels, test_imagies = prepar_train_images()
+    print("LEN train : " + str(len(train_images)))
+
 
     model = faceRecognition()
     early_stopping = EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='auto')
     model.fit(train_images, train_labels, batch_size=BATCH_SIZE, nb_epoch=NB_EPOCH,
                 validation_split=0.25, verbose=verbose_train, shuffle=True, callbacks=[early_stopping])
-    return test_imagies, model
+    return model
 
 # Test evry thing work fine
 
