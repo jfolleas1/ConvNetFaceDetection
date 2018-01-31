@@ -34,11 +34,16 @@ NB_TEST_BY_CLASS = 3000
 NB_EPOCH = 5
 BATCH_SIZE = 32
 
+##
+# Read the images at the indicate path and return a vectorized image
+##
 def read_image(file_path):
     img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE) #
     return cv2.resize(img, (ROWS, COLS), interpolation=cv2.INTER_CUBIC)
 
-
+##
+# Takes a lists of images path and return a list of vectorized images
+##
 def prep_data(images):
     count = len(images)
     data = np.ndarray((count, ROWS, COLS), dtype=np.uint8)
@@ -52,7 +57,9 @@ def prep_data(images):
 TRIAN_1_IMAGES = prep_data(TRIAN_1_PATH)
 TRIAN_0_IMAGES = prep_data(TRIAN_0_PATH)
 
-
+##
+# shuffle the set of train images
+##
 def shuffle_and_get_new_train_set():
     random.shuffle(TRIAN_1_IMAGES)
     random.shuffle(TRIAN_0_IMAGES)
@@ -62,6 +69,9 @@ def shuffle_and_get_new_train_set():
     train_0 = TRIAN_0_IMAGES[NB_TEST_BY_CLASS:]
     return train_1, train_0, test_images_1, test_images_0
 
+##
+# reutrn the train set and the test set of images and coresponding labels 
+##
 def prepar_train_images():
     hard_example_paths = list(filter(lambda x: '.DS' not in x,[HARD_EXAMPLE_DIR+i for i in os.listdir(HARD_EXAMPLE_DIR)]))
     hard_example_set = prep_data(hard_example_paths)
@@ -79,7 +89,9 @@ def prepar_train_images():
     test_imagies.resize((NB_TEST_BY_CLASS*2, 36, 36, 1))
     return np.array(train_images), np.array(train_labels), test_imagies
 
-
+##
+# Create the untrained model
+##
 def faceRecognition():
     
     model = Sequential()
@@ -100,7 +112,9 @@ def faceRecognition():
     model.compile(loss='binary_crossentropy', optimizer=RMSprop(lr=1e-4), metrics=['accuracy'])
     return model
 
-
+##
+# train the model on the train set with the hard examples and return it
+##
 def get_model(verbose_train=0):
     train_images, train_labels, test_imagies = prepar_train_images()
     print("LEN train : " + str(len(train_images)))
@@ -111,25 +125,4 @@ def get_model(verbose_train=0):
     model.fit(train_images, train_labels, batch_size=BATCH_SIZE, nb_epoch=NB_EPOCH,
                 validation_split=0.25, verbose=verbose_train, shuffle=True, callbacks=[early_stopping])
     return model
-
-# Test evry thing work fine
-
-# test_imagies, model = get_model(1)
-
-# predictions = model.predict(test_imagies, verbose=0)
-
-# false_pos = []
-# false_neg = []
-# nb_error = []
-
-# for tolerance in [0.9, 0.6, 0.5, 0.4, 0.1, 0.05, 0.02, 0.01, 0.005, 0.002, 0.001, 0.0005, 0.0002, 0.0001, 0]:
-#     false_neg.append(len(list(filter(lambda x: x[0] == x[1], list(zip(([0]*(len(test_imagies)//2)), list(map(lambda x: int(x+tolerance), predictions[:(len(test_imagies)//2)]))))))))
-#     false_pos.append(len(list(filter(lambda x: x[0] == x[1], list(zip(([1]*(len(test_imagies)//2)), list(map(lambda x: int(x+tolerance), predictions[(len(test_imagies)//2)+1:]))))))))
-#     nb_error.append((len(list(filter(lambda x: x[0] == x[1], list(zip(([0]*(len(test_imagies)//2)) +
-#                                                                         [1]*(len(test_imagies)//2),
-#                                        list(map(lambda x: int(x+tolerance), predictions))))))), tolerance))
-# print(false_pos)
-# print(false_neg)
-# print("nb error optimum : " + str(min(list(map(lambda x: x[0], nb_error)))) + " for tolereance of : " +
-#      str(list(map(lambda x: x[1], list(filter(lambda x: x[0] == min(list(map(lambda x: x[0], nb_error))), nb_error))))))
 
