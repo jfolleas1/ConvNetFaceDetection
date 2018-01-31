@@ -35,8 +35,8 @@ Don't forget to add the new package to `requirements.txt` using the command in t
 * Installing the required packages contained in `requirements.txt` in the virtual environement 
 
 ### Code organisation
-* The folder data_dificult_faces contain all the images without faces used to find hard examples.
-* ModelCreation and model are two Jupyter notebook used for make tests on different models and choose the good one with the good threshold
-* create_model_with_had_eample is the file that contain all functions used to create and return a model trained on all the biggest balanced data set and the hards examples.
-* The notebook hard_example allow to find the hard examples in the images in the directory data_dificult_faces using our model.
-* pooling is the notebok that allow to test one model on real images with faces to see the final result.
+* The folder `data_dificult_faces` contain all the images without faces used to find hard examples.
+* `ModelCreation.ipynb` and `model.ipynb` are two Jupyter notebook used for make tests on different models and choose the good one with the good threshold
+* `create_model_with_had_eample.py` is the file that contain all functions used to create and return a model trained on all the biggest balanced data set and the hards examples.
+* The notebook `hard_example.ipynb` allow to find the hard examples in the images in the directory `data_dificult_faces` using our model.
+* `pooling.ipynb` is the notebok that allow to test one model on real images with faces to see the final result.
